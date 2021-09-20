@@ -5,7 +5,7 @@
 <!-- ABSTRACT -->
 <h5>Abstract:</h5>
 
-Simple reports api, initially developed for the new dashboard [DW-1111](https://makingsense.atlassian.net/browse/DW-1111) 
+Simple reports api, initially developed for the new dashboard [DW-1111](https://makingsense.atlassian.net/browse/DW-1111)
 The main idea is to have a new API detached from Doppler MS SQL database with cache, security and easy to scale.
 
 <h5>Useful links:</h5>
