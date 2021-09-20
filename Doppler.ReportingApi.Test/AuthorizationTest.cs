@@ -1,14 +1,28 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using System.Threading.Tasks;
+using Doppler.ReportingApi.Test.Controllers;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace Doppler.ReportingApi
 {
+    public class ExternalControllersFeatureProvider : IApplicationFeatureProvider<ControllerFeature>
+    {
+        public void PopulateFeature(IEnumerable<ApplicationPart> parts, ControllerFeature feature)
+        {
+            feature.Controllers.Add(typeof(HelloController).GetTypeInfo());
+        }
+    }
+
     public class AuthorizationTest
         : IClassFixture<WebApplicationFactory<Startup>>
     {
@@ -30,6 +44,17 @@ namespace Doppler.ReportingApi
 
         public AuthorizationTest(WebApplicationFactory<Startup> factory, ITestOutputHelper output)
         {
+            factory = new WebApplicationFactory<Startup>().WithWebHostBuilder(builder =>
+            {
+                builder.ConfigureTestServices(services =>
+                {
+                    var partManager = (ApplicationPartManager)services
+                        .Last(descriptor => descriptor.ServiceType == typeof(ApplicationPartManager))
+                        .ImplementationInstance;
+
+                    partManager.FeatureProviders.Add(new ExternalControllersFeatureProvider());
+                });
+            });
             _factory = factory;
             _output = output;
         }

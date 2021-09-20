@@ -9,18 +9,17 @@ using Xunit;
 
 namespace Doppler.ReportingApi
 {
-    public class IntegrationTest1
+    public class IntegrationTest
         : IClassFixture<WebApplicationFactory<Startup>>
     {
         private readonly WebApplicationFactory<Startup> _factory;
 
-        public IntegrationTest1(WebApplicationFactory<Startup> factory)
+        public IntegrationTest(WebApplicationFactory<Startup> factory)
         {
             _factory = factory;
         }
 
         [Theory]
-        [InlineData("/WeatherForecast", HttpStatusCode.OK, "application/json; charset=utf-8")]
         [InlineData("/swagger", HttpStatusCode.Moved, null)]
         [InlineData("/swagger/index.html", HttpStatusCode.OK, "text/html; charset=utf-8")]
         [InlineData("/robots.txt", HttpStatusCode.OK, "text/plain")]
