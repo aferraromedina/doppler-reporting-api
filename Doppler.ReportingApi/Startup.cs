@@ -13,6 +13,7 @@ using Microsoft.OpenApi.Models;
 using Hellang.Middleware.ProblemDetails;
 using System.Reflection;
 using System.IO;
+using Doppler.ReportingApi.Infrastructure;
 
 namespace Doppler.ReportingApi
 {
@@ -28,9 +29,11 @@ namespace Doppler.ReportingApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<DopplerDatabaseSettings>(Configuration.GetSection(nameof(DopplerDatabaseSettings)));
             services.AddProblemDetails();
             services.AddDopplerSecurity();
             services.AddControllers();
+            services.AddRepositories();
             services.AddSwaggerGen(c =>
             {
                 c.AddSecurityDefinition("Bearer",
