@@ -20,9 +20,34 @@ namespace Doppler.ReportingApi.Infrastructure
         {
             using (var connection = await _connectionFactory.GetConnection())
             {
-                var dummyDatabaseQuery = @"SELECT 1000 as TotalSentEmails, 750 as TotalOpenClicks, 0.8 as ClickThroughRate";
+                var dummyDatabaseQuery = @"
+                SELECT 
+		                T.TotalSentEmails, 
+		                T.DistinctOpenedMailCount, 
+		                ISNULL(( T.DistinctOpenedMailCount / NULLIF (T.SendedMailCount,0 )), 0) ClickThroughRate
+                FROM (
+                    SELECT  
+	                    COUNT(*)  TotalSentEmails,    
+                        ISNULL(SUM(CASE IdDeliveryStatus WHEN 100 THEN 1 END),0) DistinctOpenedMailCount,
+	                    COUNT(CASE IdDeliveryStatus WHEN 0 THEN 1    
+                                                WHEN 1 THEN 1   
+                                                WHEN 3 THEN 1   
+                                                WHEN 4 THEN 1   
+                                                WHEN 5 THEN 1   
+                                                WHEN 6 THEN 1   
+                                                WHEN 7 THEN 1   END)  SendedMailCount
 
-                var results = await connection.QueryAsync<CampaignsSummary>(dummyDatabaseQuery);
+                    FROM [user]
+                        INNER JOIN Campaign WITH (NOLOCK) on [user].iduser = Campaign.IdUser
+	                    LEFT JOIN CampaignDeliveriesOpenInfo WITH(NOLOCK)  ON CampaignDeliveriesOpenInfo.IdCampaign = Campaign.IdCampaign
+                    WHERE 
+	                    Campaign.Status = 5 AND--SENT
+	                    Email = @userName AND
+	                    Campaign.UTCSentDate >= @startDate AND 
+	                    Campaign.UTCSentDate < @endDate
+	                ) T";
+
+                var results = await connection.QueryAsync<CampaignsSummary>(dummyDatabaseQuery, new { userName, startDate, endDate });
                 var result = results.SingleOrDefault();
                 result.StartDate = startDate;
                 result.EndDate = endDate;
@@ -34,9 +59,18 @@ namespace Doppler.ReportingApi.Infrastructure
         {
             using (var connection = await _connectionFactory.GetConnection())
             {
-                var dummyDatabaseQuery = @"SELECT 1000 as TotalSubscribers, 750 as NewSubscribers, 80 as RemovedSubscribers";
+                var dummyDatabaseQuery = @"
+                SELECT 
+	                (SELECT Count(1) FROM Subscriber S INNER JOIN [User] on [User].idUser = S.IdUser  WHERE [User].Email = @userName) AS TotalSubscribers,
+	                COUNT(1) as NewSubscribers,   
+	                COUNT(CASE WHEN  S.IdSubscribersStatus = 8 THEN 1 END) AS RemovedSubscribers 
+                FROM Subscriber S 
+	                INNER JOIN [User] on S.IdUser = [User].idUser
+	            WHERE [User].Email = @userName AND
+	  	            S.UTCCreationDate >= @startDate AND 
+		            S.UTCCreationDate < @endDate";
 
-                var results = await connection.QueryAsync<SubscribersSummary>(dummyDatabaseQuery);
+                var results = await connection.QueryAsync<SubscribersSummary>(dummyDatabaseQuery, new { userName, startDate, endDate });
                 var result = results.SingleOrDefault();
                 result.StartDate = startDate;
                 result.EndDate = endDate;
