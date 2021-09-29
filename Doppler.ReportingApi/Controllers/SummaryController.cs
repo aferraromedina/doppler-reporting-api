@@ -31,7 +31,7 @@ namespace Doppler.ReportingApi.Controllers
         [Route("{accountName}/summary/campaigns")]
         [ProducesResponseType(typeof(CampaignsSummary), 200)]
         [Produces("application/json")]
-        public async Task<CampaignsSummary> Campaigns(string accountName, [FromQuery] BasicDatefilter dateFilter)
+        public async Task<CampaignsSummary> GetCampaignsSummary(string accountName, [FromQuery] BasicDatefilter dateFilter)
         {
             var startDate = dateFilter.StartDate.HasValue ? dateFilter.StartDate.Value : DateTime.Today.AddDays(-30);
             var endDate = dateFilter.EndDate;
