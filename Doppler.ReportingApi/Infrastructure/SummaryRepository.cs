@@ -49,6 +49,7 @@ namespace Doppler.ReportingApi.Infrastructure
 
                 var results = await connection.QueryAsync<CampaignsSummary>(dummyDatabaseQuery, new { userName, startDate, endDate });
                 var result = results.SingleOrDefault();
+                result = result == null ? new CampaignsSummary() : result;
                 result.StartDate = startDate;
                 result.EndDate = endDate;
                 return result;
@@ -72,6 +73,7 @@ namespace Doppler.ReportingApi.Infrastructure
 
                 var results = await connection.QueryAsync<SubscribersSummary>(dummyDatabaseQuery, new { userName, startDate, endDate });
                 var result = results.SingleOrDefault();
+                result = result == null ? new SubscribersSummary() : result;
                 result.StartDate = startDate;
                 result.EndDate = endDate;
                 return result;
