@@ -49,7 +49,9 @@ namespace Doppler.ReportingApi.Controllers
 
             }).CreateClient(new WebApplicationFactoryClientOptions());
 
-            var request = new HttpRequestMessage(HttpMethod.Get, $"{userName}/summary/campaigns");
+            var startDate = DateTime.Today.AddDays(-30);
+            var endDate = DateTime.Today;
+            var request = new HttpRequestMessage(HttpMethod.Get, $"{userName}/summary/campaigns?startDate={startDate.ToLongDateString()}&endDate={endDate.ToLongTimeString()}");
 
             // Act
             var response = await client.SendAsync(request);

@@ -7,7 +7,7 @@ namespace Doppler.ReportingApi.Models
 {
     public class BasicDatefilter
     {
-        public DateTime? StartDate { get; set; }
-        public DateTime EndDate { get; set; } = DateTime.Today;
+        public DateTimeOffset? StartDate { get; set; }
+        public DateTimeOffset? EndDate { get; set; }
     }
 }
