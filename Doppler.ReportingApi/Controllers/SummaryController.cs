@@ -67,5 +67,21 @@ namespace Doppler.ReportingApi.Controllers
 
             return new OkObjectResult(result);
         }
+
+        /// <summary>
+        /// Returns an object with info about the use of Doppler by a particular user
+        /// </summary>
+        /// <param name="accountName"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("{accountName}/summary/system-usage")]
+        [ProducesResponseType(typeof(SystemUsageSummary), 200)]
+        [Produces("application/json")]
+        public async Task<SystemUsageSummary> SystemUsage(string accountName)
+        {
+            var result = await Task.FromResult(new SystemUsageSummary());
+
+            return result;
+        }
     }
 }
