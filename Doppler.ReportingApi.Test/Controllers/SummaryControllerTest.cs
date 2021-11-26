@@ -62,5 +62,22 @@ namespace Doppler.ReportingApi.Controllers
             Assert.Equal("application/json", response.Content.Headers.ContentType.MediaType);
             Assert.NotNull(content);
         }
+
+        [Theory]
+        [InlineData("test@makingsense.com")]
+        public async Task Get_summary_usage_should_return_valid_response(string userName)
+        {
+            // Arrange
+            var client = _factory.CreateClient(new WebApplicationFactoryClientOptions());
+            var request = new HttpRequestMessage(HttpMethod.Get, $"/{userName}/summary/system-usage");
+
+            // Act
+            var response = await client.SendAsync(request);
+            var content = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.NotNull(content);
+        }
     }
 }
