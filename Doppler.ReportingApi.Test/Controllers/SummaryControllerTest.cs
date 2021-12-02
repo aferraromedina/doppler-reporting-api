@@ -69,7 +69,43 @@ namespace Doppler.ReportingApi.Controllers
 
         [Theory]
         [InlineData("test1@test.com", TOKEN_ACCOUNT_123_TEST1_AT_TEST_DOT_COM_EXPIRE_20330518)]
-        public async Task Get_summary_usage_should_return_valid_response(string userName, string token)
+        public async Task Get_summary_subscribers_should_return_valid_response(string userName, string token)
+        {
+            // Arrange
+            var mockConnection = new Mock<DbConnection>();
+
+            mockConnection
+                .SetupDapperAsync(c => c.QueryAsync<SubscribersSummary>(It.IsAny<string>(), It.IsAny<object>(), null, null, null))
+                .ReturnsAsync(Enumerable.Empty<SubscribersSummary>());
+
+            var client = _factory.WithWebHostBuilder(builder =>
+            {
+                builder.ConfigureTestServices(services =>
+                {
+                    services.SetupConnectionFactory(mockConnection.Object);
+                });
+
+            }).CreateClient(new WebApplicationFactoryClientOptions());
+
+            var startDate = DateTime.Today.AddDays(-30);
+            var endDate = DateTime.Today;
+            var request = new HttpRequestMessage(HttpMethod.Get, $"/{userName}/summary/subscribers?startDate={startDate.ToLongDateString()}&endDate={endDate.ToLongTimeString()}")
+            {
+                Headers = { { "Authorization", $"Bearer {token}" } }
+            };
+
+            // Act
+            var response = await client.SendAsync(request);
+            var content = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.NotNull(content);
+        }
+
+        [Theory]
+        [InlineData("test1@test.com", TOKEN_ACCOUNT_123_TEST1_AT_TEST_DOT_COM_EXPIRE_20330518)]
+        public async Task Get_system_usage_should_return_empty_response(string userName, string token)
         {
             // Arrange
             var client = _factory.CreateClient(new WebApplicationFactoryClientOptions());
@@ -85,6 +121,7 @@ namespace Doppler.ReportingApi.Controllers
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.NotNull(content);
+            Assert.Equal("{}", content);
         }
     }
 }
