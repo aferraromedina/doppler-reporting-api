@@ -82,7 +82,7 @@ namespace Doppler.ReportingApi.Controllers
         [ProducesResponseType(typeof(SystemUsageSummary), 200)]
         [Produces("application/json")]
         [Authorize(Policies.OWN_RESOURCE_OR_SUPERUSER)]
-        public async Task<SystemUsageSummary> SystemUsage(string accountName)
+        public async Task<SystemUsageSummary> GetSystemUsage(string accountName)
         {
             var result = await Task.FromResult(new SystemUsageSummary());
 
