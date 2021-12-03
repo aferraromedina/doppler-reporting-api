@@ -1,3 +1,4 @@
+using Doppler.ReportingApi.DopplerSecurity;
 using Doppler.ReportingApi.Infrastructure;
 using Doppler.ReportingApi.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace Doppler.ReportingApi.Controllers
 {
+    [Authorize]
     [ApiController]
     public class SummaryController
     {
@@ -32,6 +34,7 @@ namespace Doppler.ReportingApi.Controllers
         [Route("{accountName}/summary/campaigns")]
         [ProducesResponseType(typeof(CampaignsSummary), 200)]
         [Produces("application/json")]
+        [Authorize(Policies.OWN_RESOURCE_OR_SUPERUSER)]
         public async Task<IActionResult> GetCampaignsSummary(string accountName, [FromQuery] BasicDatefilter dateFilter)
         {
             if (!dateFilter.StartDate.HasValue || !dateFilter.EndDate.HasValue)
@@ -55,6 +58,7 @@ namespace Doppler.ReportingApi.Controllers
         [Route("{accountName}/summary/subscribers")]
         [ProducesResponseType(typeof(SubscribersSummary), 200)]
         [Produces("application/json")]
+        [Authorize(Policies.OWN_RESOURCE_OR_SUPERUSER)]
         public async Task<IActionResult> GetSubscribers(string accountName, [FromQuery] BasicDatefilter dateFilter)
         {
             if (!dateFilter.StartDate.HasValue || !dateFilter.EndDate.HasValue)
@@ -77,7 +81,8 @@ namespace Doppler.ReportingApi.Controllers
         [Route("{accountName}/summary/system-usage")]
         [ProducesResponseType(typeof(SystemUsageSummary), 200)]
         [Produces("application/json")]
-        public async Task<SystemUsageSummary> SystemUsage(string accountName)
+        [Authorize(Policies.OWN_RESOURCE_OR_SUPERUSER)]
+        public async Task<SystemUsageSummary> GetSystemUsage(string accountName)
         {
             var result = await Task.FromResult(new SystemUsageSummary());
 
