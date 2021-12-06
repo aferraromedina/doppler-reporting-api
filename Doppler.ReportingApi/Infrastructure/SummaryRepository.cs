@@ -92,7 +92,7 @@ namespace Doppler.ReportingApi.Infrastructure
                 var results = await connection.QueryAsync<SystemUsageSummary>(databaseQuery, new { accountName });
                 var result = results.SingleOrDefault();
 
-                return result;
+                return result == null ? new SystemUsageSummary() : result;
             }
         }
     }
