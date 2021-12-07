@@ -8,5 +8,6 @@ namespace Doppler.ReportingApi.Infrastructure
     {
         Task<CampaignsSummary> GetCampaignsSummaryByUserAsync(string userName, DateTime startDate, DateTime endDate);
         Task<SubscribersSummary> GetSubscribersSummaryByUserAsync(string userName, DateTime startDate, DateTime endDate);
+        Task<SystemUsageSummary> GetSystemUsageAsync(string accountName);
     }
 }

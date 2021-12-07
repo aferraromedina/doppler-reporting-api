@@ -76,5 +76,24 @@ namespace Doppler.ReportingApi.Infrastructure
                 return result;
             }
         }
+
+        public async Task<SystemUsageSummary> GetSystemUsageAsync(string accountName)
+        {
+            using (var connection = await _connectionFactory.GetConnection())
+            {
+                var databaseQuery = @"
+                SELECT
+                    HasCampaignCreated AS HasCampaingsCreated,
+                    HasListCreated AS HasListsCreated,
+                    HasCampaignSent AS HasCampaingsSent
+                FROM dbo.[User]
+                WHERE Email = @accountName";
+
+                var results = await connection.QueryAsync<SystemUsageSummary>(databaseQuery, new { accountName });
+                var result = results.SingleOrDefault();
+
+                return result == null ? new SystemUsageSummary() : result;
+            }
+        }
     }
 }
