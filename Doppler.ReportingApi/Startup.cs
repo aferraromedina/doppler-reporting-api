@@ -30,6 +30,7 @@ namespace Doppler.ReportingApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<DopplerDatabaseSettings>(Configuration.GetSection(nameof(DopplerDatabaseSettings)));
+            services.AddCors();
             services.AddProblemDetails();
             services.AddDopplerSecurity();
             services.AddControllers();
@@ -89,6 +90,12 @@ namespace Doppler.ReportingApi
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseCors(policy => policy
+            .SetIsOriginAllowed(isOriginAllowed: _ => true)
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials());
 
             app.UseAuthorization();
 
