@@ -23,7 +23,7 @@ namespace Doppler.ReportingApi.Infrastructure
                 var dummyDatabaseQuery = @"
                 SELECT
                         T.TotalSentEmails,
-                        T.DistinctOpenedMailCount,
+                        T.DistinctOpenedMailCount as TotalOpenClicks,
                         ISNULL(( T.DistinctOpenedMailCount / NULLIF (T.SoftBouncedMailCount, 0 ) + NULLIF (T.UnopenedMailCount, 0 )), 0) ClickThroughRate
                 FROM (
                     SELECT
