@@ -83,11 +83,21 @@ namespace Doppler.ReportingApi.Infrastructure
             {
                 var databaseQuery = @"
                 SELECT
-                    HasCampaignCreated AS HasCampaingsCreated,
-                    HasListCreated AS HasListsCreated,
-                    HasCampaignSent AS HasCampaingsSent
-                FROM dbo.[User]
-                WHERE Email = @accountName";
+                    HasCampaignCreated,
+                    HasListCreated,
+                    HasCampaignSent,
+                    ISNULL(DomainInfo.HasDomainsReady, 0) AS HasDomainsReady
+                FROM [User]
+                    OUTER APPLY  (
+                        SELECT TOP 1 1 AS HasDomainsReady
+                        FROM DomainInformationXUser
+                        WHERE
+                            DomainInformationXUser.IdDomainStatus = 2 AND
+                            DomainInformationXUser.Active = 1 AND
+                            DomainInformationXUser.IdUser = [User].IdUser
+                        ) DomainInfo
+                WHERE
+                    [User].Email = @accountName";
 
                 var results = await connection.QueryAsync<SystemUsageSummary>(databaseQuery, new { accountName });
                 var result = results.SingleOrDefault();

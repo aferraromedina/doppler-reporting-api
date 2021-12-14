@@ -9,10 +9,10 @@ namespace Doppler.ReportingApi.Models
     {
         public bool HasListsCreated { get; set; }
         public bool HasCampaingsCreated { get; set; }
-        ///// <summary>
-        ///// Has DKIM/SPF configuration completed and valid
-        ///// </summary>
-        //public bool HasDomainsReady { get; set; }
+        /// <summary>
+        /// Has DKIM/SPF configuration completed and valid
+        /// </summary>
+        public bool HasDomainsReady { get; set; }
         public bool HasCampaingsSent { get; set; }
     }
 }
