@@ -83,10 +83,10 @@ namespace Doppler.ReportingApi.Infrastructure
             {
                 var databaseQuery = @"
                 SELECT
-                    HasCampaignCreated,
-                    HasListCreated,
-                    HasCampaignSent,
-                    ISNULL(DomainInfo.HasDomainsReady, 0) AS HasDomainsReady
+                    HasCampaignCreated AS HasCampaingsCreated,
+                    HasListCreated AS HasListsCreated,
+                    HasCampaignSent AS HasCampaingsSent,
+                    CAST(ISNULL(DomainInfo.HasDomainsReady, 0) AS BIT) AS HasDomainsReady
                 FROM [User]
                     OUTER APPLY  (
                         SELECT TOP 1 1 AS HasDomainsReady
