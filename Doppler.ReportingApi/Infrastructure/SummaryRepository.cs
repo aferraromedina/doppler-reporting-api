@@ -24,17 +24,24 @@ namespace Doppler.ReportingApi.Infrastructure
                 SELECT
                         T.TotalSentEmails,
                         T.DistinctOpenedMailCount as TotalOpenClicks,
-                        ISNULL(( T.DistinctOpenedMailCount / NULLIF (T.SoftBouncedMailCount, 0 ) + NULLIF (T.UnopenedMailCount, 0 )), 0) ClickThroughRate
+
+                        CAST(ISNULL(T.UniqueClickCount, 0) AS FLOAT) /
+                        CAST(NULLIF((ISNULL(T.DistinctOpenedMailCount, 0) + ISNULL(T.UnopenedMailCount, 0)), 0) AS FLOAT) * 100 AS ClickThroughRate
                 FROM (
                     SELECT
                     SUM(Campaign.AmountSentSubscribers) AS TotalSentEmails,
                     SUM(Campaign.DistinctOpenedMailCount) AS DistinctOpenedMailCount,
 
-                    SUM(Campaign.SoftBouncedMailCount) AS SoftBouncedMailCount,
-                    SUM(Campaign.UnopenedMailCount) AS UnopenedMailCount
-
+                    SUM(Campaign.UnopenedMailCount) AS UnopenedMailCount,
+                    SUM(LinkInfo.UniqueClickCount) AS UniqueClickCount
                     FROM [user]
                         INNER JOIN Campaign WITH (NOLOCK) on [user].iduser = Campaign.IdUser
+                    OUTER APPLY (
+                        SELECT COUNT(DISTINCT LT.IdSubscriber) AS UniqueClickCount
+                        FROM Link L WITH (NOLOCK)
+                        INNER JOIN LinkTracking LT WITH (NOLOCK) ON LT.IdLink = L.IdLink
+                        WHERE L.IdCampaign = Campaign.IdCampaign
+                    ) AS LinkInfo
                     WHERE
                         Campaign.Status = 5 AND --SENT
                         Campaign.IdTestCampaign IS NULL AND --Exclude test campaigns
